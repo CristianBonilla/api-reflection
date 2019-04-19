@@ -5,16 +5,16 @@ import com.annotation.Column;
 
 // javaBean classic
 public class Person {
-    @PrimaryKey
+    @PrimaryKey(name = "k_id")
     private long id;
 
-    @Column
+    @Column(name = "c_name")
     private String name;
 
-    @Column
+    @Column(name = "c_age")
     private int age;
 
-    // public Person() {}
+    public Person() {}
 
     public Person(String name, int age) {
 
@@ -51,6 +51,6 @@ public class Person {
     }
 
     public String toString() {
-        return "Person [name=" + name + ", age=" + age + "]";
+        return "Person [id=" + id + " name=" + name + ", age=" + age + "]";
     }
 }

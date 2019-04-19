@@ -1,0 +1,97 @@
+2019-04-19 14:40:02 jdbc[6]: null
+org.h2.message.DbException: La conexión no fue cerrada por la aplicación y esta siendo limpiada (garbage collected)
+The connection was not closed by the application and is garbage collected [90018-198]
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.message.DbException.get(DbException.java:170)
+	at org.h2.jdbc.JdbcConnection.closeOld(JdbcConnection.java:197)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:137)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:103)
+	at org.h2.Driver.connect(Driver.java:69)
+	at org.h2.util.JdbcUtils.getConnection(JdbcUtils.java:299)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:737)
+	at org.h2.server.web.WebApp.test(WebApp.java:940)
+	at org.h2.server.web.WebApp.process(WebApp.java:235)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:170)
+	at org.h2.server.web.WebThread.process(WebThread.java:134)
+	at org.h2.server.web.WebThread.run(WebThread.java:90)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientConnectionException: La conexión no fue cerrada por la aplicación y esta siendo limpiada (garbage collected)
+The connection was not closed by the application and is garbage collected [90018-198]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:616)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	... 15 more
+2019-04-19 16:09:39 database: flush
+org.h2.message.DbException: Error General : "java.lang.IllegalStateException: The file is locked: nio:E:/Software-Developer/Back-end/Java/Reflection/Development/Reflection/dbFiles/dbReflection.mv.db [1.4.198/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:E:/Software-Developer/Back-end/Java/Reflection/Development/Reflection/dbFiles/dbReflection.mv.db [1.4.198/7]" [50000-198]
+	at org.h2.message.DbException.get(DbException.java:194)
+	at org.h2.message.DbException.convert(DbException.java:347)
+	at org.h2.mvstore.db.MVTableEngine$1.uncaughtException(MVTableEngine.java:90)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:2787)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:441)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:404)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:3343)
+	at org.h2.mvstore.db.MVTableEngine$Store.open(MVTableEngine.java:162)
+	at org.h2.mvstore.db.MVTableEngine.init(MVTableEngine.java:95)
+	at org.h2.engine.Database.getPageStore(Database.java:2740)
+	at org.h2.engine.Database.open(Database.java:769)
+	at org.h2.engine.Database.openDatabase(Database.java:319)
+	at org.h2.engine.Database.<init>(Database.java:313)
+	at org.h2.engine.Engine.openSession(Engine.java:69)
+	at org.h2.engine.Engine.openSession(Engine.java:201)
+	at org.h2.engine.Engine.createSessionAndValidate(Engine.java:178)
+	at org.h2.engine.Engine.createSession(Engine.java:161)
+	at org.h2.engine.Engine.createSession(Engine.java:31)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:336)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:124)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:103)
+	at org.h2.Driver.connect(Driver.java:69)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:677)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:228)
+	at com.orm.EntityManagerBase.prepareStatementWith(EntityManagerConcrete.java:69)
+	at com.orm.EntityManagerBase.find(EntityManagerConcrete.java:29)
+	at com.ReadingObjects.main(ReadingObjects.java:9)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Error General : "java.lang.IllegalStateException: The file is locked: nio:E:/Software-Developer/Back-end/Java/Reflection/Development/Reflection/dbFiles/dbReflection.mv.db [1.4.198/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:E:/Software-Developer/Back-end/Java/Reflection/Development/Reflection/dbFiles/dbReflection.mv.db [1.4.198/7]" [50000-198]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:502)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	... 27 more
+Caused by: java.lang.IllegalStateException: The file is locked: nio:E:/Software-Developer/Back-end/Java/Reflection/Development/Reflection/dbFiles/dbReflection.mv.db [1.4.198/7]
+	at org.h2.mvstore.DataUtils.newIllegalStateException(DataUtils.java:883)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:390)
+	... 21 more
+2019-04-19 16:10:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "SELECT ID, NAME, AGE FROM PERSON WHERE ID ?[*] "
+Syntax error in SQL statement "SELECT ID, NAME, AGE FROM PERSON WHERE ID ?[*] "; SQL statement:
+SELECT id, name, age FROM Person WHERE id ? [42000-198]
+2019-04-19 16:59:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: Tipo de dato desconocido : "K_ID"
+Unknown data type: "K_ID"; SQL statement:
+CREATE TABLE Person(
+  k_id,
+  c_name,
+) [50004-198]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:502)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.table.Table.setColumns(Table.java:459)
+	at org.h2.table.TableBase.<init>(TableBase.java:76)
+	at org.h2.mvstore.db.MVTable.<init>(MVTable.java:131)
+	at org.h2.mvstore.db.MVTableEngine$Store.createTable(MVTableEngine.java:236)
+	at org.h2.mvstore.db.MVTableEngine.createTable(MVTableEngine.java:119)
+	at org.h2.mvstore.db.MVTableEngine.createTable(MVTableEngine.java:42)
+	at org.h2.schema.Schema.createTable(Schema.java:706)
+	at org.h2.command.ddl.CreateTable.update(CreateTable.java:107)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:133)
+	at org.h2.command.Command.executeUpdate(Command.java:267)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:233)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:1113)
+	at org.h2.server.web.WebApp.getResult(WebApp.java:1433)
+	at org.h2.server.web.WebApp.query(WebApp.java:1108)
+	at org.h2.server.web.WebApp$1.next(WebApp.java:1070)
+	at org.h2.server.web.WebApp$1.next(WebApp.java:1057)
+	at org.h2.server.web.WebThread.process(WebThread.java:165)
+	at org.h2.server.web.WebThread.run(WebThread.java:90)
+	at java.base/java.lang.Thread.run(Thread.java:844)

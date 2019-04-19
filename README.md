@@ -55,6 +55,19 @@ Constructor[] declaredConstructors = getClass.getDeclaredConstructors();
 Constructor[] constructors = getClass.getConstructos();
 ```
 
+## Accesibilidad
+
+Si el campo dado es privado entonces habría una excepción que es una excepción IllegalAccessException porque no hay permiso para leer un campo privado desde fuera de la clase ‘Person’, entonces la encapsulación no está rota y si hay una verificación de seguridad para acceder a un miembro privado a una clase Reflection, hay un método en la clase ‘Field’ que se llama setAccessible(). La llamada a setAccessible() en true realmente hace que suprima el control de acceso en ese campo.
+
+```java
+Person o = …;
+Class<?> getClass = o.getClass();
+Field field = getClass.getDeclaredField("name");
+field.setAccessible(true);
+field.setValue(o, "Sarah");
+String name = (String)field.getValue(o);
+```
+
 ## Anotaciones
 
 ```java
