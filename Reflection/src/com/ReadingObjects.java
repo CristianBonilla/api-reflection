@@ -1,11 +1,17 @@
 package com;
 
+import com.beanManager.BeanManager;
 import com.model.Person;
-import com.orm.EntityManager;
+import com.dependenciesInjection.EntityManager;
+import com.dependenciesInjection.EntityManagerBase;
+// import com.orm.EntityManager;
 
 public class ReadingObjects {
 	public static void main(String[] args) throws Exception {
-		EntityManager<Person> entityManager = EntityManager.of(Person.class);
+		BeanManager beanManager = BeanManager.getInstance();
+		EntityManager<Person> entityManager = beanManager.getInstance(EntityManagerBase.class);
+
+		// EntityManager<Person> entityManager = EntityManager.of(Person.class);
 		Person linda = entityManager.find(Person.class, 1L);
 		Person james = entityManager.find(Person.class, 2L);
 		Person susan = entityManager.find(Person.class, 3L);

@@ -81,6 +81,7 @@ public class Person {
 
     // getters and setters
 }
+
 public @interface PrimaryKey { }
 public @interface Column { }
 ```
@@ -90,3 +91,27 @@ En la forma como funcionan las anotaciones en java, el compilador primero maneja
 * La primera etapa es la propia etapa de compilación, por lo que solo el compilador podrá ver esa anotación si elegimos hacerlo.
 * La segunda etapa es la carga de clases por lo que la anotación solo verá el cargador de clases.
 * La tercera es el propio tiempo de ejecución.
+
+## Inyección de dependencias
+
+Si se está diseñando un objeto que necesita otro objeto para funcionar, un objeto delegado, entonces este primer objeto no debe intentar crear el objeto delegado, en lugar de eso cuando se construye el objeto, debería intentar pedir algún otro mecanismo para inyectar ese objeto delegado en el primer objeto. Entonces una forma de implementar esto es trabajar con un framework de inyección de dependencias, no es la única forma de implementar, pero probablemente sea la más clásica en las aplicaciones empresariales.
+
+![Alt text](/Reflection/assets/dependenciesInjection.png?raw=true "Database Connection")
+
+```java
+BeanManager beanManager = BeanManager.getInstance();
+EntityManager entityManager = beanManager.get(EntityManager.class);
+```
+
+## Invocación de métodos
+
+```java
+public class ConnectionProvider {
+  Connection createConnection(String url) { ... }
+}
+
+Class<?> connectionType = ConnectionProvider.class;
+Object connectionProvider = connectionType.getConstructor().getInstance();
+Method method = connectionType.getMethod("createConnection", String.class);
+method.invoke(connectionProvider, "jdbc:h2:mem:db_reflection");
+```
