@@ -1,4 +1,4 @@
-package com.dependenciesInjection;
+package com.injection;
 
 import com.annotation.Inject;
 import com.util.ColumnField;
@@ -13,12 +13,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class EntityManagerBase<T> implements EntityManager<T> {
+public class EntityManager<T> implements EntityManagerBase<T> {
 
 	private AtomicLong idGenerator = new AtomicLong(0L);
 
 	@Inject
-	private Connection connection;
+	private Connection connection = null;
 
 	@Override
 	public void persist(T model) throws SQLException, IllegalAccessException {

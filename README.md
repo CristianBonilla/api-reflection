@@ -1,4 +1,4 @@
-# Reflection
+# API Reflection
 
 La API reflection se trata de leer y modificar el contenido de un objeto en tiempo de ejecución sin ningún conocimiento previo de la estructura o incluso la clase de ese objeto en el momento de la compilación. De hecho, la API de reflection trata de descubrir el contenido de un objeto y la estructura de la clase en tiempo de ejecución, que es una funcionalidad muy potente.
 
@@ -49,7 +49,7 @@ Para obtener los constructores de una clase, un constructor puede ser visto como
 
 ```java
 Class<?> getClass = Person.class;
-Constructor constructor = getClass.getConstructor(Class<?>… types);
+Constructor constructor = getClass.getConstructor(Class<?>... types);
 Constructor[] declaredConstructors = getClass.getDeclaredConstructors();
 //Los constructores de la super clase no estarán incluidos, es la diferencia con los métodos y campos.
 Constructor[] constructors = getClass.getConstructos();
@@ -60,7 +60,7 @@ Constructor[] constructors = getClass.getConstructos();
 Si el campo dado es privado entonces habría una excepción que es una excepción IllegalAccessException porque no hay permiso para leer un campo privado desde fuera de la clase ‘Person’, entonces la encapsulación no está rota y si hay una verificación de seguridad para acceder a un miembro privado a una clase Reflection, hay un método en la clase ‘Field’ que se llama setAccessible(). La llamada a setAccessible() en true realmente hace que suprima el control de acceso en ese campo.
 
 ```java
-Person o = …;
+Person o = ...;
 Class<?> getClass = o.getClass();
 Field field = getClass.getDeclaredField("name");
 field.setAccessible(true);
@@ -115,3 +115,139 @@ Object connectionProvider = connectionType.getConstructor().getInstance();
 Method method = connectionType.getMethod("createConnection", String.class);
 method.invoke(connectionProvider, "jdbc:h2:mem:db_reflection");
 ```
+
+## API Reflection y su rendimiento
+
+Cada vez que se llama a un método desde la API de reflection, se realizan varias comprobaciones de seguridad para verificar si el código puede acceder a una clase mediante reflection y todas esas comprobaciones se verifican nuevamente cada vez que se realiza un acceso, entonces si el mismo código se llama una y otra vez al mismo método de reflection, esas comprobaciones de seguridad se realizan una y otra vez solo para devolver el mismo resultado. Esto ha sido visto hace mucho tiempo, todos esos controles son costosos y tienen un impacto notable en el rendimiento.
+
+## API MethodHandle
+
+Es un objeto de búsqueda porque encapsula toda la información de seguridad, ya que se comprueba una vez y como esa información no va a cambiar se usará todo el tiempo cuando se acceda a una clase, un campo o un método. Desde el objeto de búsqueda se puede crear instancias de MethodHandle para acceder a la clase, los métodos dentro de esa clase y los campos dentro de esa clase, por lo tanto, este único identificador de método le dará acceso a todo el contenido de la clase que se distribuyó entre varios objetos en la API de reflection de java, es decir, objetos de método, constructor y campo.
+
+```java
+// Por cada subproceso con su rol de seguridad el objeto de 
+// búsqueda será diferente.
+Lookup lookup = MethodHandles.lookup();  // factory method
+// no debe compartirse con algún código no confiable,
+// porque se tendrá acceso a los objetos utilizando reflection
+// con la seguridad de otra persona.
+
+Person person = ...;
+// devuelve una instancia de Lookup
+Class<?> personClass = MethodHandles.lookup()
+  .findClass(Person.class.getName());
+```
+
+Un tipo de método para un método que devuelve una cadena y no toma ningún argumento.
+
+```java
+Lookup lookup = MethodHandles.lookup();
+// public String getName() { ... }
+MethodType getterType = MethodType.methodType(String.class);
+```
+
+Un tipo de método para un método que devuelve void y toma un argumento String.
+
+```java
+// public void setName(String name) { … }
+MethodType setterType = MethodType.methodType(void.class, String.class);
+```
+
+En el caso de un constructor, el tipo devuelto es void.class
+
+```java
+// public Person() { ... }
+MethodType emptyConstructorType = MethodType.methodType(void.class);
+
+// public Person(String name, int age) { … }
+MethodType constructorType = MethodType.methodType(void.class,
+String.class, int.class);
+```
+
+Obtener un controlador en un método de instancia regular
+
+```java
+Lookup lookup = MethodHandles.lookup();
+
+// public String getName() { ... }
+MethodType getterType = MethodType.methodType(String.class);
+MethodHandle getterHandle = lookup.findVirtual(Person.class, "getName", getterType);
+
+// public void setName(String name) { ... }
+MethodType setterType = MethodType.methodType(void.class, String.class);
+MethodHandle setterHandle = lookup.findVirtual(Person.class, "setName", setterType);
+
+// public Person() { ... }
+MethodType emptyConstructorType = MethodType.methodType(void.class);  // not Void.class
+MethodHandle emptyConstructorHandle = lookup.findConstructor(Person.class, emptyConstructorType);
+
+// public Person(String name, int age) { ... }
+MethodType constructorType = MethodType.methodType(void.class, String.class, int.class);
+MethodHandle constructorHandle = lookup.findConstructor(Person.class, constructorType);
+```
+
+Un identificador devuelto por un findGetter da acceso de lectura en un campo y no llama al captador de ese campo.
+
+```java
+Lookup lookup = MethodHandles.lookup();
+// reads name
+MethodHandle nameReader = lookup.findGetter(Person.class, "name", String.class);
+```
+
+Un identificador devuelto por un findSetter da acceso de escritura en un campo y no llama al configurador de ese campo.
+
+```java
+Lookup lookup = MethodHandles.lookup();
+// writes name
+MethodHandle nameSetter = lookup.findSetter(Person.class, "name", String.class);
+```
+
+Invocar a un getter no requiere ningún argumento y devuelve una cadena.
+
+```java
+Person person = ...;
+MethodHandle nameGetter = ...;
+String name = (String)nameGetter.invoke(person);
+```
+
+Invocar a un definidor requiere un argumento String y no devuelve nada.
+
+```java
+Person person = ...;
+MethodHandle nameSetter = ...;
+nameSetter.invoke(person, "John");
+```
+
+### Accesos privados
+
+Una solución pre-Java 9 es usar los métodos unreflect() para accesos privados.
+
+```java
+Person person = ...;
+Field nameField = Person.class.getDeclaredField("name");
+nameField.setAccessible(true);
+
+MethodHandle privateNameReader = lookup.unreflectGetter(field);
+String name = (String)privateNameReader.invoke(person);
+```
+
+Java 9 trae una solución mucho más limpia, usando un objeto de búsqueda para los elementos privados de una clase.
+
+```java
+Person person = ...;
+Lookup privateLookup = MethodHandles.privateLookupIn(Person.class, lookup);
+
+MethodHandle privateNameReader = privateLookup.findGetter(Person.class, "name", String.class);
+String name = (String)privateNameReader.invoke(person);
+
+MethodHandle privateNameWriter = privateLookup.findSetter(Person.class, "name", String.class);
+privateNameWriter.invoke(person, "John");
+```
+
+## VarHandle
+
+Tiene una funcionalidad especial que fue agregada en java 9, parece un MethodHandle para los campos, el MethodHandle ya puede acceder a un campo, dándole acceso completo e incluso a los campos privados ¿por qué se han agregado VarHandles a Java 9? Es porque VarHandle da tres tipos de acceso a los campos.
+
+* **Es solo el acceso sencillo, regular, leer y escribir en campos públicos y privados, esto se hace en MethodHandles**
+* **También brinda acceso volátil**
+* **Compara y configura el acceso**

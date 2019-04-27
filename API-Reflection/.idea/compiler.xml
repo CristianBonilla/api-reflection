@@ -12,7 +12,7 @@
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
     <bytecodeTargetLevel>
-      <module name="Reflection" target="9" />
+      <module name="API-Reflection" target="9" />
     </bytecodeTargetLevel>
   </component>
 </project>

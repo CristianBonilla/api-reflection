@@ -1,17 +1,17 @@
 package com;
 
 import com.beanManager.BeanManager;
-import com.dependenciesInjection.EntityManager;
-import com.dependenciesInjection.EntityManagerBase;
+import com.injection.EntityManagerBase;
+import com.injection.EntityManager;
 import com.model.Person;
-// import com.orm.EntityManager;
+// import com.orm.EntityManagerBase;
 
 public class WritingObjects {
 	public static void main(String[] args) throws Exception {
 		BeanManager beanManager = BeanManager.getInstance();
-		EntityManager<Person> entityManager = beanManager.getInstance(EntityManagerBase.class);
+		EntityManagerBase<Person> entityManager = beanManager.getInstance(EntityManager.class);
 
-		// EntityManager<Person> entityManager = EntityManager.of(Person.class);
+		// EntityManagerBase<Person> entityManager = EntityManagerBase.of(Person.class);
 
 		Person linda = new Person("Linda", 31);
 		Person james = new Person("James", 24);

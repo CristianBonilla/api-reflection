@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public abstract class EntityManagerBase<T> implements EntityManager<T> {
+public abstract class EntityManager<T> implements EntityManagerBase<T> {
 
 	private AtomicLong idGenerator = new AtomicLong(0L);
 

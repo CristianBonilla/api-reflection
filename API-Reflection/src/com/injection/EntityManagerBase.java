@@ -1,13 +1,9 @@
-package com.orm;
+package com.injection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
-public interface EntityManager<T> {
-	static <T> EntityManager<T> of(Class<T> modelClass) {
-		return new H2EntityManager<>();
-	}
-
+public interface EntityManagerBase<T> {
 	void persist(T model) throws SQLException, IllegalAccessException;
 
 	T find(Class<T> modelClass, Object primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException;
