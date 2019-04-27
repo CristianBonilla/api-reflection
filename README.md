@@ -251,3 +251,26 @@ Tiene una funcionalidad especial que fue agregada en java 9, parece un MethodHan
 * **Es solo el acceso sencillo, regular, leer y escribir en campos públicos y privados, esto se hace en MethodHandles**
 * **También brinda acceso volátil**
 * **Compara y configura el acceso**
+
+El método get() invoca un manejador var en modo normal.
+
+```java
+Lookup lookup = ...;
+Person person = ...;
+
+VarHandle nameVarHandle = MethodHandles.privateLookupIn(Person.class, lookup)
+  .findVarHandle(Person.class, "name", String.class);
+String name = (String)nameVarHandle.get(person);
+```
+
+El método getVolatile () invoca un manejador var en modo volátil.
+
+```java
+String name = (String)nameVarHandle.getVolatile(person);
+```
+
+El método getAndAdd () agrega atómicamente el valor pasado y devuelve el valor anterior.
+
+```java
+Int newAge = (int)ageVarHandle.getAndAdd(person, 1);
+```
